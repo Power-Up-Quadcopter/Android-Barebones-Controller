@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView navigationView;
 
     //  wifi stuff
+    boolean setupComplete = false;
+    String IP = "192.168.1.109";
+    int port = 5414;
     Socket socket;
     BufferedReader input;
     PrintWriter output;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        btnConnect = findViewById(R.id.btnConnect);
         navigationView = findViewById(R.id.navigationMenu);
 
         navigationView.setOnNavigationItemSelectedListener(item -> navigationMenuHandler(item));
@@ -46,18 +51,7 @@ public class MainActivity extends AppCompatActivity {
         btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String IP = "192.168.1.109";
-                int port = 5414;
-
-                try {
-                    socket = new Socket(IP, port);
-                    input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    output = new PrintWriter(socket.getOutputStream());
-
-                    toast("lmao we gucci?");
-                } catch (Exception e) {
-                    toast(e.toString());
-                }
+                new Thread(new NetworkSetupThread()).start();
             }
         });
 
@@ -72,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void loop() {
-        output.print(118);
+        if(setupComplete) output.print(118);
     }
 
     public boolean navigationMenuHandler(MenuItem item) {
@@ -98,5 +92,28 @@ public class MainActivity extends AppCompatActivity {
         int duration = Toast.LENGTH_SHORT;
 
         Toast.makeText(context, message, duration).show();
+    }
+
+    class NetworkSetupThread implements Runnable {
+        public void run() {
+            Looper.prepare();
+            toast("1");
+            Socket socket;
+            try {
+                toast("2");
+                socket = new Socket(IP, port);
+                toast("3");
+                input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                toast("4");
+                output = new PrintWriter(socket.getOutputStream());
+                toast("5");
+
+                setupComplete = true;
+                toast("lmao we gucci?");
+            } catch (Exception e) {
+                toast(e.toString());
+                e.printStackTrace();
+            }
+        }
     }
 }
