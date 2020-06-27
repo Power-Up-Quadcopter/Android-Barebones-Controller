@@ -20,6 +20,10 @@
         android:title="GPS"
         android:visible="true" />
     <item
+        android:id="@+id/networkMenuItem"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Network" />
+    <item
         android:id="@+id/settingsMenuItem"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="Settings" />
