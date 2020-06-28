@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.concurrent.Executors;
@@ -27,23 +28,13 @@ public class Tab_Network extends Fragment {
 
     EditText textBox;
 
-    NetworkHandler network;
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Runnable loop = this::loop;
+        scheduler.scheduleAtFixedRate(loop, 0, 5, TimeUnit.MILLISECONDS);
 
-//        btnConnect = findViewById(R.id.btnConnect);
-//        btnSend = findViewById(R.id.btnSend);
-//        textBox = findViewById(R.id.textBox);
-
-//        btnConnect.setOnClickListener(this::btnHandler_connect);
-//        btnSend.setOnClickListener(this::btnHandler_send);
-
-//        network = new NetworkHandler();
-
-//        Runnable loop = this::loop;
-//        scheduler.scheduleAtFixedRate(loop, 0, 5, TimeUnit.MILLISECONDS);
+        Log.i("Network", "OnCreate");
     }
 
     void loop() {
@@ -57,28 +48,35 @@ public class Tab_Network extends Fragment {
 //            Log.i("LOOP ERROR", e.toString());
 //        }
 
-        Log.i("TCP INPUT", network.readTCPLine());
+        Log.i("TCP INPUT", NetworkHandler.readTCPLine());
     }
 
     public void btnHandler_connect(View view) {
 //        udpNetworkSetup();
-        network.tcpNetworkSetup();
+        NetworkHandler.tcpNetworkSetup();
     }
 
     public void btnHandler_send(View view) {
 //        sendUDP("udp test\n".getBytes());
-        network.sendTCP("tcp test\n".toCharArray());
+        NetworkHandler.sendTCP("tcp test\n".toCharArray());
     }
 
     public static Tab_Settings newInstance() {
         return new Tab_Settings();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.tab_network, container, false);
+        View view = inflater.inflate(R.layout.tab_network, container, false);
+        btnConnect = view.findViewById(R.id.btnConnect);
+        btnSend = view.findViewById(R.id.btnSend);
+        textBox = view.findViewById(R.id.textBox);
+
+        btnConnect.setOnClickListener(this::btnHandler_connect);
+        btnSend.setOnClickListener(this::btnHandler_send);
+
+        return view;
     }
 
     @Override
