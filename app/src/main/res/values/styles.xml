@@ -20,4 +20,8 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <style name="TabLayoutTextSize" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">6sp</item>
+    </style>
+
 </resources>

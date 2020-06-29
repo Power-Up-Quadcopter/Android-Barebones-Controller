@@ -11,6 +11,7 @@ import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class NetworkHandler {
@@ -24,6 +25,7 @@ public class NetworkHandler {
     static PrintWriter tcpOutput;
     // UDP
     static DatagramSocket udpSocket;
+    static byte[] buffer = new byte[10000];
 
     static boolean sendTCP(char[] buffer) {
         if(tcpSocket == null) return false;
@@ -69,6 +71,37 @@ public class NetworkHandler {
         return null;
     }
 
+    static String readTCPAll() {
+        if(tcpSocket == null) return null;
+        try {
+            String toReturn = "";
+
+            int val = tcpInput.read();
+            while(val != -1) {
+                toReturn += (char) val;
+                val = tcpInput.read();
+            }
+
+            if(toReturn.length() == 0) return null;
+            else return toReturn;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static String readUDPPacket() {
+        if(udpSocket == null) return null;
+        try {
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(IP), port);
+            udpSocket.receive(packet);
+            Log.i("RECEIVED: ", packet.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     static public void tcpNetworkSetup() {
         if(tcpConnectionInProgress || (tcpSocket != null && tcpSocket.isConnected())) return;
 
@@ -77,7 +110,8 @@ public class NetworkHandler {
         new Thread(() -> {
             Looper.prepare();
             try {
-                tcpSocket = new Socket(IP, port);
+                tcpSocket = new Socket();
+                tcpSocket.connect(new InetSocketAddress(IP, port), 1000);
                 tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
                 tcpOutput = new PrintWriter(tcpSocket.getOutputStream());
 

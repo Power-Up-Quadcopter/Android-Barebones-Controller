@@ -6,9 +6,15 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
+import android.graphics.fonts.Font;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -24,24 +30,22 @@ public class MainActivity extends AppCompatActivity implements
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    BottomNavigationView navigationView;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Control"));
-        tabLayout.addTab(tabLayout.newTab().setText("Camera"));
-        tabLayout.addTab(tabLayout.newTab().setText("GPS"));
-        tabLayout.addTab(tabLayout.newTab().setText("Network"));
-        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        tabLayout.addTab(tabLayout.newTab().setText("Control").setIcon(android.R.drawable.ic_media_play));
+        tabLayout.addTab(tabLayout.newTab().setText("Camera").setIcon(android.R.drawable.ic_menu_camera));
+        tabLayout.addTab(tabLayout.newTab().setText("GPS").setIcon(android.R.drawable.ic_menu_mylocation));
+        tabLayout.addTab(tabLayout.newTab().setText("Network").setIcon(android.R.drawable.ic_menu_view));
+        tabLayout.addTab(tabLayout.newTab().setText("Settings").setIcon(android.R.drawable.ic_menu_preferences));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final ViewPager viewPager = findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
