@@ -21,10 +21,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.example.powerupquadcopter.NetworkHandler.*;
 import static com.example.powerupquadcopter.NetworkHandler.readUDPPacket;
-import static com.example.powerupquadcopter.NetworkHandler.sendUDP;
-import static com.example.powerupquadcopter.NetworkHandler.tcpOutput;
-import static com.example.powerupquadcopter.NetworkHandler.udpNetworkSetup;
 
 public class Tab_Network extends Fragment {
 
@@ -44,9 +42,9 @@ public class Tab_Network extends Fragment {
 
         Runnable loopTCP = this::loopTCP;
         Runnable loopUDP = this::loopUDP;
-        scheduler.scheduleAtFixedRate(loopUDP, 0, 5, TimeUnit.MILLISECONDS);
 
         new Thread(loopTCP).start();
+        new Thread(loopUDP).start();
 
         Log.i("Network", "OnCreate");
     }
@@ -57,7 +55,7 @@ public class Tab_Network extends Fragment {
             try {
                 String TCPReceive = NetworkHandler.readTCPLine();
                 if (TCPReceive != null) {
-                    Log.i("TCP RECEIVE", TCPReceive);
+                    Log.i("TCP RECEIVED", TCPReceive);
 
                     Date time = Calendar.getInstance().getTime();
                     int hours = time.getHours();
@@ -95,16 +93,44 @@ public class Tab_Network extends Fragment {
     }
 
     void loopUDP() {
-        try {
-            String UDPReceive = readUDPPacket();
-            if (UDPReceive != null) {
-                Log.i("UDP RECEIVE", UDPReceive);
-                textViewUDP.append(UDPReceive);
-            } else {
-                Thread.sleep(100);
+        Looper.prepare();
+        while(true) {
+            try {
+                String UDPReceive = readUDPPacket();
+                if (UDPReceive != null) {
+                    Log.i("UDP RECEIVED", UDPReceive);
+
+                    Date time = Calendar.getInstance().getTime();
+                    int hours = time.getHours();
+                    int minutes = time.getMinutes();
+                    int seconds = time.getSeconds();
+                    String timestamp = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                    String consoleLog = "[" + timestamp + "]" + UDPReceive + "\n";
+                    Log.i("Printed", consoleLog);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //  only scroll if at end
+                            int scrollAmount = textViewUDP.getLayout().getLineTop(
+                                    textViewUDP.getLineCount()) - textViewUDP.getHeight();
+                            boolean scroll = textViewUDP.getScrollY() == scrollAmount
+                                    || textViewUDP.getScrollY() <= 0;
+                            textViewUDP.append(consoleLog);
+
+                            scrollAmount = textViewUDP.getLayout().getLineTop(
+                                    textViewUDP.getLineCount()) - textViewUDP.getHeight();
+                            // if there is no need to scroll, scrollAmount will be <=0
+                            scrollAmount = Math.max(scrollAmount, 0);
+                            if(scroll) textViewUDP.scrollTo(0, scrollAmount);
+                        }
+                    });
+                } else {
+                    Thread.sleep(20);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -123,8 +149,13 @@ public class Tab_Network extends Fragment {
     }
 
     public void btnHandler_UDPSend(View view) {
-        udpNetworkSetup();
-        sendUDP("udp test\n".getBytes());
+        String toSend = editUDPMessage.getText().toString();
+
+        //  replace \n with new lines
+        toSend = toSend.replaceAll(";", "\n");
+
+        Log.i("UDP", "Sending: " + toSend);
+        NetworkHandler.sendUDP(toSend.getBytes());
     }
 
     public static Tab_Settings newInstance() {

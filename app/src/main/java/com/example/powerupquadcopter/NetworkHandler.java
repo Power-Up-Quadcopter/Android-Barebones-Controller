@@ -45,7 +45,7 @@ public class NetworkHandler {
     }
 
     static boolean sendUDP(byte[] buffer) {
-        if(udpSocket == null) return false;
+        if(udpSocket == null) udpNetworkSetup();
 
         new Thread(() -> {
             try {
@@ -71,29 +71,11 @@ public class NetworkHandler {
         return null;
     }
 
-    static String readTCPAll() {
-        if(tcpSocket == null) return null;
-        try {
-            String toReturn = "";
-
-            int val = tcpInput.read();
-            while(val != -1) {
-                toReturn += (char) val;
-                val = tcpInput.read();
-            }
-
-            if(toReturn.length() == 0) return null;
-            else return toReturn;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     static String readUDPPacket() {
-        if(udpSocket == null) return null;
+        if(udpSocket == null) udpNetworkSetup();
         try {
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(IP), port);
+//            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(IP), port);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             udpSocket.receive(packet);
             Log.i("RECEIVED: ", packet.toString());
         } catch (Exception e) {
@@ -128,16 +110,13 @@ public class NetworkHandler {
     static public void udpNetworkSetup() {
         if(udpSocket != null) return;
 
-        new Thread(() -> {
-            Looper.prepare();
-            try {
-                Log.i("UDPNetworkSetupThread", "tryna do a UDP setup");
-                udpSocket = new DatagramSocket();
-                Log.i("UDPNetworkSetupThread", "UDP is gucci");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        try {
+            Log.i("UDPNetworkSetupThread", "tryna do a UDP setup");
+            udpSocket = new DatagramSocket();
+            Log.i("UDPNetworkSetupThread", "UDP is gucci");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
