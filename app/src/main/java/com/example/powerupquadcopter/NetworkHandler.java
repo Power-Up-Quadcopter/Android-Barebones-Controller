@@ -35,7 +35,7 @@ public class NetworkHandler {
                 tcpOutput.flush();
                 StringBuilder s = new StringBuilder();
                 for (char c : buffer) s.append(c);
-                Log.i("TCP Thread", "TCP send: \"" + s + "\"");
+                Log.i("TCP", "Sending: \"" + s + "\"");
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -64,7 +64,17 @@ public class NetworkHandler {
     static String readTCPLine() {
         if(tcpSocket == null) return null;
         try {
-            return tcpInput.readLine();
+            if(!tcpSocket.isConnected()) {
+                Log.i("TCP", "nope");
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String s = tcpInput.readLine();
+            return s;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -74,10 +84,13 @@ public class NetworkHandler {
     static String readUDPPacket() {
         if(udpSocket == null) udpNetworkSetup();
         try {
+            Log.i("UDP", "Waiting for packet...");
 //            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(IP), port);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             udpSocket.receive(packet);
-            Log.i("RECEIVED: ", packet.toString());
+            String received = buffer.toString();
+            Log.i("UDP RECEIVED: ", received);
+            return received;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,7 +125,7 @@ public class NetworkHandler {
 
         try {
             Log.i("UDPNetworkSetupThread", "tryna do a UDP setup");
-            udpSocket = new DatagramSocket();
+            udpSocket = new DatagramSocket(port);
             Log.i("UDPNetworkSetupThread", "UDP is gucci");
         } catch (Exception e) {
             e.printStackTrace();

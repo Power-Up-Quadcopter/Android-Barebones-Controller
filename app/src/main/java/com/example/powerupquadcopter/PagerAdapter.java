@@ -26,20 +26,17 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch(position)
         {
             case 0:
-                Tab_Control tab0 = new Tab_Control();
-                return tab0;
+                return new Tab_Control();
             case 1:
-                Tab_Camera tab1 = new Tab_Camera();
-                return tab1;
+                return new Tab_Camera();
             case 2:
-                Tab_GPS tab2 = new Tab_GPS();
-                return tab2;
+                return new Tab_GPS();
             case 3:
-                Tab_Network tab3 = new Tab_Network();
-                return tab3;
+                return new Tab_Tuning();
             case 4:
-                Tab_Settings tab4 = new Tab_Settings();
-                return tab4;
+                return new Tab_Network();
+            case 5:
+                return new Tab_Settings();
             default:
                 return null;
         }

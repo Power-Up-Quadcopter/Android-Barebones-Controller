@@ -5,6 +5,7 @@
     android:id="@+id/menuLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:screenOrientation="landscape"
     android:background="#FFFFFF"
     android:theme="@style/Theme.Transparent"
     tools:context=".MainActivity"

@@ -8,17 +8,24 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements
-    Tab_Control.OnFragmentInteractionListener,Tab_Camera.OnFragmentInteractionListener,Tab_GPS.OnFragmentInteractionListener,
-    Tab_Network.OnFragmentInteractionListener,Tab_Settings.OnFragmentInteractionListener {
+        Tab_Control.OnFragmentInteractionListener,
+        Tab_Camera.OnFragmentInteractionListener,
+        Tab_GPS.OnFragmentInteractionListener,
+        Tab_Tuning.OnFragmentInteractionListener,
+        Tab_Network.OnFragmentInteractionListener,
+        Tab_Settings.OnFragmentInteractionListener {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -29,12 +36,15 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
+        ControllerHandler.initialize();
+
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Control").setIcon(android.R.drawable.ic_media_play));
         tabLayout.addTab(tabLayout.newTab().setText("Camera").setIcon(android.R.drawable.ic_menu_camera));
         tabLayout.addTab(tabLayout.newTab().setText("GPS").setIcon(android.R.drawable.ic_menu_mylocation));
-        tabLayout.addTab(tabLayout.newTab().setText("Network").setIcon(android.R.drawable.ic_menu_view));
-        tabLayout.addTab(tabLayout.newTab().setText("Settings").setIcon(android.R.drawable.ic_menu_preferences));
+        tabLayout.addTab(tabLayout.newTab().setText("Tuning").setIcon(R.drawable.ic_baseline_tune_24));
+        tabLayout.addTab(tabLayout.newTab().setText("Network").setIcon(R.drawable.ic_baseline_wifi_24));
+        tabLayout.addTab(tabLayout.newTab().setText("Settings").setIcon(R.drawable.ic_baseline_settings_24));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = findViewById(R.id.pager);
@@ -64,6 +74,16 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     void loop() {
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+        return ControllerHandler.motionEventHandler(ev);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return ControllerHandler.dispatchEventHandler(event);
     }
 
     @Override

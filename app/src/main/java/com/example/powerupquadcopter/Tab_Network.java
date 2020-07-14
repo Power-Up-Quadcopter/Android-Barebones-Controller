@@ -135,6 +135,7 @@ public class Tab_Network extends Fragment {
     }
 
     public void btnHandler_TCPConnect(View view) {
+
         NetworkHandler.tcpNetworkSetup();
     }
 
@@ -144,7 +145,6 @@ public class Tab_Network extends Fragment {
         //  replace \n with new lines
         toSend = toSend.replaceAll(";", "\n");
 
-        Log.i("TCP", "Sending: " + toSend);
         NetworkHandler.sendTCP(toSend.toCharArray());
     }
 
@@ -154,7 +154,6 @@ public class Tab_Network extends Fragment {
         //  replace \n with new lines
         toSend = toSend.replaceAll(";", "\n");
 
-        Log.i("UDP", "Sending: " + toSend);
         NetworkHandler.sendUDP(toSend.getBytes());
     }
 
