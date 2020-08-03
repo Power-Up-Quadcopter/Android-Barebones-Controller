@@ -27,6 +27,11 @@ public class NetworkHandler {
     static DatagramSocket udpSocket;
     static byte[] buffer = new byte[10000];
 
+    public static final int A1 = 1;
+    public static final int A2 = 2;
+    public static final int A3 = 3;
+    public static final int A4 = 4;
+
     static boolean sendTCP(char[] buffer) {
         if(tcpSocket == null) return false;
         new Thread(() -> {
@@ -80,6 +85,7 @@ public class NetworkHandler {
         }
         return null;
     }
+
 
     static String readUDPPacket() {
         if(udpSocket == null) udpNetworkSetup();

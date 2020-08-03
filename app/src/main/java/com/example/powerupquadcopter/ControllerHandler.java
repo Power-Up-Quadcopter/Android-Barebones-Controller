@@ -4,30 +4,30 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import java.security.Key;
-
 public class ControllerHandler {
 
     public static boolean btnA, btnB, btnX, btnY,   //  primary buttons
                         btnStart, btnSelect,        //  those 2 middle ones
                         btnL, btnR, btnU, btnD,     //  directional pad (d-pad)
-                        btnTL, btnTR;               //  L/R trigger bumpers (not the triggers)
-    public static double joyX, joyY, trigL, trigR;
+                        btnBL, btnBR,               //  L/R trigger bumpers (above triggers)
+                        btnTL, btnTR,               //  L/R triggers
+            btnJL, btnJR;               //  Joystick buttons
+    public static double joyLX, joyLY, joyRX, joyRY;
 
     public static void initialize() {
         //  reset all variables
         btnA = btnB = btnX = btnY = btnStart = btnSelect = btnL = btnR =
-                btnU = btnD = btnTL = btnTR = false;
-        joyX = joyY = trigL = trigR = 0;
+                btnU = btnD = btnBL = btnBR = btnTL = btnTR = false;
+        joyLX = joyLY = joyRX = joyRY = 0;
     }
 
     //  this function handles joystick events and is called by the Main Activity
     public static boolean motionEventHandler(MotionEvent ev) {
         if( (ev.getSource() & InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK){
-            joyX = ev.getAxisValue(MotionEvent.AXIS_HAT_X);
-            joyY = ev.getAxisValue(MotionEvent.AXIS_HAT_Y);
-            trigL = ev.getAxisValue(MotionEvent.AXIS_LTRIGGER);
-            trigR = ev.getAxisValue(MotionEvent.AXIS_RTRIGGER);
+            joyLX = ev.getAxisValue(MotionEvent.AXIS_X);
+            joyLY = ev.getAxisValue(MotionEvent.AXIS_Y);
+            joyRX = ev.getAxisValue(MotionEvent.AXIS_Z);
+            joyRY = -ev.getAxisValue(MotionEvent.AXIS_RZ);
             return true;
         }
         return false;
@@ -51,10 +51,10 @@ public class ControllerHandler {
                     btnY = ev.getAction() == KeyEvent.ACTION_DOWN;
                     break;
                 case KeyEvent.KEYCODE_BUTTON_L1:
-                    btnTL = ev.getAction() == KeyEvent.ACTION_DOWN;
+                    btnBL = ev.getAction() == KeyEvent.ACTION_DOWN;
                     break;
                 case KeyEvent.KEYCODE_BUTTON_R1:
-                    btnTR = ev.getAction() == KeyEvent.ACTION_DOWN;
+                    btnBR = ev.getAction() == KeyEvent.ACTION_DOWN;
                     break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                     btnL = ev.getAction() == KeyEvent.ACTION_DOWN;
@@ -67,6 +67,12 @@ public class ControllerHandler {
                     break;
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     btnD = ev.getAction() == KeyEvent.ACTION_DOWN;
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_L2:
+                    btnTL = ev.getAction() == KeyEvent.ACTION_DOWN;
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_R2:
+                     btnTR = ev.getAction() == KeyEvent.ACTION_DOWN;
                     break;
                 default:
                     return false;
@@ -90,6 +96,39 @@ public class ControllerHandler {
             }
         }
         return true;
+    }
+
+    public static byte[] getButtonPacket() {
+        boolean[] btnArray = new boolean[16];
+        btnArray[15] = btnTL;
+        btnArray[14] = btnTR;
+        btnArray[13] = btnBL;
+        btnArray[12] = btnBR;
+        btnArray[11] = btnStart;
+        btnArray[10] = btnSelect;
+        btnArray[9] = btnJL;
+        btnArray[8] = btnJR;
+        btnArray[7] = btnA;
+        btnArray[6] = btnB;
+        btnArray[5] = btnX;
+        btnArray[4] = btnY;
+        btnArray[3] = btnU;
+        btnArray[2] = btnR;
+        btnArray[1] = btnD;
+        btnArray[0] = btnL;
+
+        byte one = 0, two = 0;
+        for(int i = 0; i < 8; i++) {
+            if(btnArray[i+8]) one |= 1 << i;
+            if(btnArray[i]) two |= 1 << i;
+        }
+
+        return new byte[] {one, two};
+    }
+
+    public static byte[] getAxesPacket() {
+        byte[] packet
+        btnArray[0] 
     }
 
 }

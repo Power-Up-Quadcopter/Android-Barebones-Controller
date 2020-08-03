@@ -49,15 +49,15 @@ public class Tab_Tuning extends Fragment {
                 case YAW:
                     yawSeries.appendData(new DataPoint(yawX++, value),
                             true, 100);
-                    yawText.setText(String.format("%0.1f", value));
+                    yawText.setText(String.format("%.1f", value));
                 case PITCH:
                     pitchSeries.appendData(new DataPoint(pitchX++, value),
                             true, 100);
-                    pitchText.setText(String.format("%0.1f", value));
+                    pitchText.setText(String.format("%.1f", value));
                 case ROLL:
                     rollSeries.appendData(new DataPoint(rollX++, value),
                             true, 100);
-                    rollText.setText(String.format("%0.1f", value));
+                    rollText.setText(String.format("%.1f", value));
             }
 
         });

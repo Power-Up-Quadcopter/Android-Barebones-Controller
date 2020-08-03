@@ -8,13 +8,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -53,27 +53,48 @@ public class MainActivity extends AppCompatActivity implements
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            @Override public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition()); }
+            @Override public void onTabUnselected(TabLayout.Tab tab) { }
+            @Override public void onTabReselected(TabLayout.Tab tab) { }
         });
 
         Runnable loop = this::loop;
         scheduler.scheduleAtFixedRate(loop, 0, 5, TimeUnit.MILLISECONDS);
     }
 
+    int x = 0;
+    final int WATCHDOG_LOOP_FREQUENCY = 4; long loopWatchdog = 0;
+    final int CONTROLLER_LOOP_FREQUENCY = 20; long loopController = 0;
+    boolean lastControllerState = false;
+
     void loop() {
+        if(x++ == 10) {
+            x = 0;
+        }
+
+        long millis = System.currentTimeMillis();
+
+        //  WATCHDOG LOOP
+        if(millis - loopWatchdog > WATCHDOG_LOOP_FREQUENCY) {
+            loopWatchdog = millis;
+
+            // if controller state changes from connected/disconnected,
+        }
+
+        //  CONTROLLER LOOP
+        if(millis - loopController > CONTROLLER_LOOP_FREQUENCY) {
+            loopController = millis;
+
+            // controller connected/disconnected state change
+            boolean controllerState = ControllerHandler.isControllerConnected();
+            if(controllerState != lastControllerState) {
+                lastControllerState = controllerState;
+                //  TODO SEND JOYSTICK CONNECTED/DISCONNECTED MESSAGE
+            }
+
+
+        }
     }
 
     @Override

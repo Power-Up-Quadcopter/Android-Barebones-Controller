@@ -13,8 +13,8 @@
         android:layout_height="41dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="118dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginStart="93dp"
+        android:layout_marginTop="138dp"
         android:text="controls"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
